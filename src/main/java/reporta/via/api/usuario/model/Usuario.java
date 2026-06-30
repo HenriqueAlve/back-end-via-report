@@ -1,5 +1,6 @@
 package reporta.via.api.usuario.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class Usuario implements UserDetails {
     private boolean ativo = true;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Ocorrencia> ocorrencias;
 
     // ===== UserDetails =====

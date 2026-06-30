@@ -1,5 +1,7 @@
 package reporta.via.api.ocorrencia.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -21,4 +23,6 @@ public interface OcorrenciaRepository extends JpaRepository<Ocorrencia, UUID>,
     int countByUsuarioAndStatus(Usuario usuario, Status status);
 
     List<Ocorrencia> findByUsuario(Usuario usuario);
+
+    Page<Ocorrencia> findAll(Pageable pageable);
 }

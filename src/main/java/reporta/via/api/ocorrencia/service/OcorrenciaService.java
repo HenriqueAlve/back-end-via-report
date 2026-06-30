@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import reporta.via.api.exceptions.OcorrenciaNaoEncontradaException;
+import reporta.via.api.exceptions.RecursoNaoEncontradoException;
 import reporta.via.api.exceptions.RegraDeNegocioException;
 import reporta.via.api.foto.model.FotoOcorrencia;
 import reporta.via.api.foto.repository.FotoOcorrenciaRepository;
@@ -22,13 +23,15 @@ import reporta.via.api.ocorrencia.specification.OcorrenciaSpec;
 import reporta.via.api.usuario.dto.response.UsuarioResumoDetalhesDTO;
 import reporta.via.api.usuario.model.Usuario;
 import reporta.via.api.usuario.repository.UsuarioRepository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OcorrenciaService {
@@ -219,4 +222,244 @@ public class OcorrenciaService {
         }
  }
 
+    public Map<String, List<OcorrenciaResponseDTO>> listarOcorrenciasAgrupadasPorStatus() {
+
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().map(
+                mapper::toResponseDTO
+        ).collect(
+                Collectors.groupingBy(
+                        o -> o.status().name()
+                )
+        );
+
+
+    }
+
+    public Map<String,Long> listarOcorrenciasPorCategoria() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().collect(
+                Collectors.groupingBy(
+                        u -> u.getCategoria().name() , Collectors.counting()
+                )
+        );
+    }
+
+    public Map<String, List<OcorrenciaResponseDTO>> listarOcorrenciasPorPrioridade() {
+
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().filter(
+                f -> f.getResponsavel() != null
+        ).map(
+                mapper::toResponseDTO
+                ).
+                collect(
+                Collectors.groupingBy(
+                        o -> o.prioridade().name()
+                )
+        );
+    }
+
+    public Map<String, List<OcorrenciaResponseDTO>> listarOcorrenciasPorBairro() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().map(
+                    mapper::toResponseDTO
+                ).
+                collect(
+                Collectors.groupingBy(
+                        u -> u.bairro()
+                )
+        );
+    }
+
+    public Map<String, Long> listarOcorrenciasExistemPorStatus() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().collect(
+                Collectors.groupingBy(
+                        o -> o.getStatus().name(), Collectors.counting()
+                )
+        );
+    }
+
+    public Map<String, List<OcorrenciaResponseDTO>> listarOcorrenciasPorPrioridadeComStatusAberto() {
+
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().filter(
+                s -> s.getStatus().name().equals("ABERTO")
+        ).map(
+                mapper::toResponseDTO
+        ).collect(
+                Collectors.groupingBy(
+                        p -> p.prioridade().name()
+                )
+        );
+    }
+
+    public Map<String, Long> listarOcorrenciasPorUsuarioAberto() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().collect(
+                Collectors.groupingBy(
+                        o -> o.getUsuario().getNome(), Collectors.counting()
+                )
+        );
+    }
+
+    public Map<String, List<String>> listarOcorrenciasPorCategoriaETitulo() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().collect(
+                Collectors.groupingBy(
+                        o -> o.getCategoria().name(),Collectors.mapping(
+                                o -> o.getTitulo(), Collectors.toList()
+                        )
+                )
+        );
+    }
+
+    public Map<String, Long> listarOcorrenciasPorMes() {
+
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().collect(
+                Collectors.groupingBy(
+                        o -> o.getCriadaEm().getMonth().name(), Collectors.counting()
+                )
+        );
+    }
+
+    public List<OcorrenciaResponseDTO> ordenarOcorrenciaDoRecenteProMaisAntigo() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().map(
+                mapper::toResponseDTO
+        ).sorted(Comparator.comparing(
+                (OcorrenciaResponseDTO o) -> o.criadaEm()
+        ).reversed()).collect(
+                Collectors.toList()
+        );
+    }
+
+    public Map<String,Long> contagemPorMesComPrioridadeAlta() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().filter(
+                ocorrencia -> ocorrencia.getPrioridade().name().equals("ALTA")
+        ).collect(
+                Collectors.groupingBy(
+                        o -> o.getCriadaEm().getMonth().name(), Collectors.counting()
+                )
+        );
+    }
+
+
+    public Map<String, Long> contagemDeOcorrenciasPorBairroQueNaoEstaoVazios() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().filter(ocorrencia -> ocorrencia.getBairro() != null && !ocorrencia.getBairro().isEmpty()).collect(
+                Collectors.groupingBy(
+                        o -> o.getBairro(), Collectors.counting()
+                )
+        );
+    }
+
+    public List<String> titulosDeTodasOcorrencias() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().filter(
+                ocorrencia -> ocorrencia.getResponsavel() == null || ocorrencia.getResponsavel().isEmpty()
+        ).map(
+                ocorrencia -> ocorrencia.getTitulo()
+        ).sorted(Comparator.naturalOrder()).toList();
+
+    }
+
+    public List<String> listaDeTodasAsFotos() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().flatMap(
+                ocorrencia -> ocorrencia.getFotos().stream()
+        ).map(
+                fotoOcorrencia -> fotoOcorrencia.getUrl()
+        ).collect(
+                Collectors.toList()
+        );
+    }
+
+    public List<String> listaDeTodasObservacoes() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        List<String> resultado = lista.stream().flatMap(
+                ocorrencia -> ocorrencia.getHistoricos().stream()
+        ).filter(
+                o -> o.getObservacao() != null || !o.getObservacao().isEmpty()
+        ).map(
+                o -> o.getObservacao().toString()
+        ).distinct().toList();
+
+        if(resultado.isEmpty()){
+            throw new RegraDeNegocioException("Lista vazia");
+        }
+        return resultado;
+    }
+
+    public OcorrenciaResponseDTO buscarOcorrenciaPorId(UUID id) {
+        Ocorrencia resultado = repository.findById(id).orElseThrow(
+                () -> new RecursoNaoEncontradoException("Ocorrencia com o " + id + "não encontrado!")
+        );
+
+        return mapper.toResponseDTO(resultado);
+
+    }
+
+    public String buscarResponsavelDaOcorrencia(UUID id) {
+        Ocorrencia resultado = repository.findById(id).orElseThrow(
+                () -> new RecursoNaoEncontradoException("Ocorrencia com o " + id + " não encontrado!")
+        );
+        return Optional.ofNullable(resultado.getResponsavel()).orElse(
+                "Sem responsavel"
+        );
+    }
+
+    public String buscarNomeDoUsuarioDaOcorrencia(UUID id) {
+        Ocorrencia resultado = repository.findById(id).orElseThrow(
+                () -> new RecursoNaoEncontradoException("Ocorrencia com o " + id + " não encontrado!")
+        );
+        return Optional.ofNullable(resultado.getUsuario().getNome()).orElseThrow(
+                () -> new RecursoNaoEncontradoException("Não foi possivel encontrar")
+        );
+    }
+
+    public OcorrenciaResponseDTO validarSeOcorrenciaEstaAberta(UUID id) {
+        Ocorrencia resultado = repository.findById(id).orElseThrow(
+                () -> new RecursoNaoEncontradoException("Ocorrencia com o " + id + " não encontrado!")
+        );
+        if(resultado.getStatus() != Status.ABERTO){
+            throw new RegraDeNegocioException("Ocorrência não está aberta");
+        }
+        return mapper.toResponseDTO(resultado);
+    }
+
+    public Page listarPaginado(Pageable pageable) {
+        Page<Ocorrencia> pagina = repository.findAll(pageable);
+        return pagina.map(mapper::toResponseDTO);
+    }
+
+
+    public Page<OcorrenciaResponseDTO> filtrar(
+            String status, String categoria, String bairro, Pageable pageable
+    ) {
+        Specification<Ocorrencia> spec = Specification
+                .where(OcorrenciaSpec.comStatus(status))
+                .and(OcorrenciaSpec.comCategoria(categoria))
+                .and(OcorrenciaSpec.comBairro(bairro));
+
+        return repository.findAll(spec, pageable).map(mapper::toResponseDTO);
+    }
 }

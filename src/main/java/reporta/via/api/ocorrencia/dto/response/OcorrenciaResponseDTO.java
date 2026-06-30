@@ -40,4 +40,7 @@ public record OcorrenciaResponseDTO(
 
         List<String> fotos
 ) {
+
+
+
 }

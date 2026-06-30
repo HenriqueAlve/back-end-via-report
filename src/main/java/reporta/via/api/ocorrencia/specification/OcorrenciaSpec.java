@@ -1,6 +1,7 @@
 package reporta.via.api.ocorrencia.specification;
 
 import org.springframework.data.jpa.domain.Specification;
+import reporta.via.api.ocorrencia.enums.Bairro;
 import reporta.via.api.ocorrencia.enums.Categoria;
 import reporta.via.api.ocorrencia.enums.Status;
 import reporta.via.api.ocorrencia.model.Ocorrencia;
@@ -24,5 +25,14 @@ public class OcorrenciaSpec {
             }
             return builder.equal(root.get("categoria"), Categoria.valueOf(categoria));
         };
+    }
+
+    public static Specification<Ocorrencia> comBairro(String bairro){
+        return ((root, query, builder) -> {
+            if (bairro == null || bairro.isBlank()) {
+                return builder.conjunction();
+            }
+            return builder.equal(root.get("bairro"),bairro);
+        });
     }
 }

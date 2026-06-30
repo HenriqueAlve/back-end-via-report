@@ -14,6 +14,9 @@ import reporta.via.api.infra.security.TokenService;
 import reporta.via.api.usuario.model.Usuario;
 import reporta.via.api.usuario.repository.UsuarioRepository;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -60,4 +63,6 @@ public class AuthController {
 
         return ResponseEntity.status(201).build();
     }
+
+
 }
