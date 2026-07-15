@@ -1,6 +1,8 @@
 package reporta.via.api.ocorrencia.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import reporta.via.api.ocorrencia.dto.request.OcorrenciaRequestDTO;
 import reporta.via.api.ocorrencia.dto.request.OcorrenciaStatusUpdateDTO;
 import reporta.via.api.ocorrencia.dto.response.*;
 import reporta.via.api.ocorrencia.enums.Status;
+import reporta.via.api.ocorrencia.event.StatusAlteradoEvent;
 import reporta.via.api.ocorrencia.mapper.OcorrenciaMapper;
 import reporta.via.api.ocorrencia.model.Ocorrencia;
 import reporta.via.api.ocorrencia.repository.OcorrenciaRepository;
@@ -34,6 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OcorrenciaService {
 
     @Autowired
@@ -50,6 +54,11 @@ public class OcorrenciaService {
 
     @Autowired
     private OcorrenciaMapper mapper;
+
+
+    private final ApplicationEventPublisher publisher;
+
+
 
 
 
@@ -215,12 +224,14 @@ public class OcorrenciaService {
         if (ocorrencia.getStatus() == Status.RESOLVIDO || ocorrencia.getStatus() == Status.CANCELADO){
             throw new RegraDeNegocioException("Não é possivel alterar o status dessa ocorrencia");
         }else{
-
+            Status statusAnterior = ocorrencia.getStatus();
+            Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             ocorrencia.setStatus(dto.status());
             ocorrencia = repository.save(ocorrencia);
+            publisher.publishEvent(new StatusAlteradoEvent(id, statusAnterior, dto.status(),usuarioLogado.getId()));
             return mapper.toResponseDTO(ocorrencia);
         }
- }
+    }
 
     public Map<String, List<OcorrenciaResponseDTO>> listarOcorrenciasAgrupadasPorStatus() {
 

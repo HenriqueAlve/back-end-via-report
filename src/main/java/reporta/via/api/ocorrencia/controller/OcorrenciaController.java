@@ -99,121 +99,121 @@ public class OcorrenciaController {
         return ResponseEntity.ok(ocorrenciaAtualizada);
     }
 
-    @GetMapping("/desafio-um")
+    @GetMapping("/agrupadas/status")
     public ResponseEntity<Map<String, List<OcorrenciaResponseDTO>>> listarOcorrenciasAgrupadasPorStatus(){
         Map<String, List<OcorrenciaResponseDTO>> resultado = service.listarOcorrenciasAgrupadasPorStatus();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-dois")
+    @GetMapping("/contagem/categoria")
     public ResponseEntity<Map<String,Long>> listarOcorrenciasPorCategoria(){
         Map<String, Long> resultado = service.listarOcorrenciasPorCategoria();
         return ResponseEntity.ok(resultado);
     }
-    @GetMapping("/desafio-doiss")
+    @GetMapping("/agrupadas/prioridade")
     public ResponseEntity<Map<String,List<OcorrenciaResponseDTO>>> listarOcorrenciasPorPrioridade(){
         Map<String, List<OcorrenciaResponseDTO>> resultado = service.listarOcorrenciasPorPrioridade();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-4")
+    @GetMapping("/agrupadas/bairro")
     public ResponseEntity<Map<String,List<OcorrenciaResponseDTO>>> listarOcorrenciasPorBairro(){
         Map<String, List<OcorrenciaResponseDTO>> resultado = service.listarOcorrenciasPorBairro();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-5")
+    @GetMapping("/contagem/status")
     public ResponseEntity<Map<String, Long> > listarOcorrenciasExistemPorStatus(){
         Map<String, Long>  resultado = service.listarOcorrenciasExistemPorStatus();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-6")
+    @GetMapping("/abertas/agrupadas/prioridade")
     public ResponseEntity<Map<String,List<OcorrenciaResponseDTO>>> listarOcorrenciasPorPrioridadeComStatusAberto(){
         Map<String, List<OcorrenciaResponseDTO>> resultado = service.listarOcorrenciasPorPrioridadeComStatusAberto();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-7")
+    @GetMapping("/abertas/contagem/usuario")
     public ResponseEntity<Map<String, Long>> listarOcorrenciasPorUsuarioAberto(){
         Map<String, Long>  resultado = service.listarOcorrenciasPorUsuarioAberto();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-8")
+    @GetMapping("/agrupadas/categoria/titulos")
     public ResponseEntity<Map<String, List<String>>> listarOcorrenciasPorCategoriaETitulo(){
         Map<String, List<String>>  resultado = service.listarOcorrenciasPorCategoriaETitulo();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-9")
+    @GetMapping("/contagem/mes")
     public ResponseEntity<Map<String, Long>> listarOcorrenciasPorMes(){
         Map<String, Long>  resultado = service.listarOcorrenciasPorMes();
         return ResponseEntity.ok(resultado);
     }
 
 
-    @GetMapping("/desafio-10")
+    @GetMapping("/recentes")
     public ResponseEntity<List<OcorrenciaResponseDTO>> ordenarOcorrenciaDoRecenteProMaisAntigo(){
         List<OcorrenciaResponseDTO> resultado = service.ordenarOcorrenciaDoRecenteProMaisAntigo();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-11")
+    @GetMapping("/prioridade-alta/contagem/mes")
     public ResponseEntity<Map<String,Long>> contagemPorMesComPrioridadeAlta(){
         Map<String,Long> resultado = service.contagemPorMesComPrioridadeAlta();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-12")
+    @GetMapping("/contagem/bairro")
     public ResponseEntity<Map<String,Long>> contagemDeOcorrenciasPorBairroQueNaoEstaoVazios(){
         Map<String,Long> resultado = service.contagemDeOcorrenciasPorBairroQueNaoEstaoVazios();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-13")
+    @GetMapping("/titulos")
     public ResponseEntity<List<String>> titulosDeTodasOcorrencias(){
         List<String> resultado = service.titulosDeTodasOcorrencias();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-14")
+    @GetMapping("/fotos")
     public ResponseEntity<List<String>> listaDeTodasAsFotos(){
         List<String> resultado = service.listaDeTodasAsFotos();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-15")
+    @GetMapping("/observacoes")
     public ResponseEntity<List<String>> listaDeTodasObservacoes(){
         List<String> resultado = service.listaDeTodasObservacoes();
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-16/{id}")
+    @GetMapping("/{id}/resumo")
     public ResponseEntity<OcorrenciaResponseDTO> buscarOcorrenciaPorId(@PathVariable UUID id){
         OcorrenciaResponseDTO resultado = service.buscarOcorrenciaPorId(id);
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-17/{id}")
+    @GetMapping("/{id}/responsavel")
     public ResponseEntity<String> buscarResponsavelDaOcorrencia(@PathVariable UUID id){
         String resultado = service.buscarResponsavelDaOcorrencia(id);
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-18/{id}")
+    @GetMapping("/{id}/usuario/nome")
     public ResponseEntity<String> buscarNomeDoUsuarioDaOcorrencia(@PathVariable UUID id){
         String resultado = service.buscarNomeDoUsuarioDaOcorrencia(id);
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/desafio-19/{id}")
+    @GetMapping("/{id}/validar-aberta")
     public ResponseEntity<OcorrenciaResponseDTO> validarSeOcorrenciaEstaAberta(@PathVariable UUID id){
         OcorrenciaResponseDTO resultado = service.validarSeOcorrenciaEstaAberta(id);
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("paginado")
+    @GetMapping("/paginado")
     public ResponseEntity<Page<OcorrenciaResponseDTO>> listarPaginado(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

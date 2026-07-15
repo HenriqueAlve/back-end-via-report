@@ -32,15 +32,15 @@ public class SecurityConfig {
                         // rotas públicas
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/registrar").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/ocorrencia/salvar").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/ocorrencias").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
 
                         // rotas por perfil
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/ocorrencia**").hasAnyRole("ADMIN", "GESTOR")
-                        .requestMatchers(HttpMethod.GET, "/api/ocorrencia**").hasAnyRole("ADMIN", "GESTOR")
-                        .requestMatchers(HttpMethod.PATCH, "/api/ocorrencia**").hasAnyRole("ADMIN", "GESTOR", "FISCAL")
+                        .requestMatchers(HttpMethod.DELETE, "/api/ocorrencias/**").hasAnyRole("ADMIN", "GESTOR")
+                        .requestMatchers(HttpMethod.GET, "/api/ocorrencias", "/api/ocorrencias/**").hasAnyRole("ADMIN", "GESTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/ocorrencias/**").hasAnyRole("ADMIN", "GESTOR", "FISCAL")
 
                         // qualquer autenticado acessa o resto
                         .anyRequest().authenticated()
