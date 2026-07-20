@@ -236,6 +236,12 @@ public class OcorrenciaController {
     }
 
 
+    @GetMapping("/dashboard/alertas")
+    public ResponseEntity<Map<String, Long>> listaDeAlertasDashboard(){
+        Map<String, Long> resultado = service.listaDeAlertasDashboard();
+        return ResponseEntity.ok(resultado);
+    }
+
 
 
 }

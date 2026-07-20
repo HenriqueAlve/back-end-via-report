@@ -473,4 +473,12 @@ public class OcorrenciaService {
 
         return repository.findAll(spec, pageable).map(mapper::toResponseDTO);
     }
+
+    public Map<String, Long> listaDeAlertasDashboard() {
+        List<Ocorrencia> lista = repository.findAll();
+
+        return lista.stream().collect(
+                Collectors.groupingBy(o -> o.getPrioridade().name() , Collectors.counting())
+        );
+    }
 }
