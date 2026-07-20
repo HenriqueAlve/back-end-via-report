@@ -42,10 +42,9 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: viareport-tunnel
     restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
+    command: tunnel --config /home/nonroot/.cloudflared/config.yml run
     volumes:
-      - ./cloudflared/config.yml:/etc/cloudflared/config.yml
-      - ~/.cloudflared:/etc/cloudflared
+      - ./cloudflared:/home/nonroot/.cloudflared
     depends_on:
       - nginx
 
